@@ -86,4 +86,6 @@ pub fn add_to_runtime(runtime: &Runtime, config: APIConfig) -> Result<()> {
     #[cfg(feature = "text_encoding")]
     text_encoding::TextEncoding.register(runtime, &config)?;
     Ok(())
+    #[cfg(feature = "ubiq_fn")]
+    
 }
