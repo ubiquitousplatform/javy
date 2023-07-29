@@ -1,9 +1,10 @@
 // Read input from stdin
-const input = readInput();
+// const input = readInput();
 // Call the function with the input
-const result = foo(input);
+// const result = foo(input);
 // Write the result to stdout
-writeOutput(result);
+foo();
+//writeOutput(result);
 
 // The main function.
 function foo(input) {
@@ -15,7 +16,7 @@ function foo(input) {
     })
   );
   Ubiquitous.Functions.invoke("", data);
-  return { foo: input.n + 1, newBar: input.bar + "!" };
+  // return { foo: input.n + 1, newBar: input.bar + "!" };
 }
 
 // Read input from stdin
