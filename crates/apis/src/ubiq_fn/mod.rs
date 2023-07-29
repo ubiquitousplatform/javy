@@ -1,39 +1,54 @@
 use anyhow::Result;
-use javy::{quickjs::JSValue, Runtime};
+use std::io::{Read, Write};
+
+use javy::Runtime;
 
 use crate::{APIConfig, JSApiSet};
 
-pub struct UbiqFn;
+pub(super) struct UbiqFn;
 
 impl JSApiSet for UbiqFn {
     fn register(&self, runtime: &Runtime, _config: &APIConfig) -> Result<()> {
-        let ctx = runtime.context();
-        ctx.global_object()?.get_property("Math")?.set_property(
-            "random",
-            // TODO figure out if we can lazily initialize the PRNG
-            ctx.wrap_callback(|_ctx, _this, _args| Ok(JSValue::Float(fastrand::f64())))?,
+        let context = runtime.context();
+        let global = context.global_object()?;
+
+        // If it doesn't already exist, create and register the UbiqFn object
+        let mut ubiq_fn = global.get_property("Ubiquitous")?;
+        if ubiq_fn.is_undefined() {
+            ubiq_fn = context.object_value()?;
+            global.set_property("Ubiquitous", ubiq_fn)?;
+        }
+
+        global.set_property(
+            "__ubiquitous_functions_invoke",
+            context.wrap_callback(|_, _this_arg, args| {
+                //println!("Name: {}", name);
+                //println!("Args: {:?}", args);
+                //println!("This: {:?}", this_arg);
+                println!("Made it across to rust!");
+                /*
+                let [fd, data, offset, length, ..] = args else {
+                    anyhow::bail!("Invalid number of parameters");
+                };
+                let mut fd: Box<dyn Read> = match fd.try_into()? {
+                    0 => Box::new(std::io::stdin()),
+                    _ => anyhow::bail!("Only stdin is supported"),
+                };
+                let offset: usize = offset.try_into()?;
+                let length: usize = length.try_into()?;
+                if !data.is_array_buffer() {
+                    anyhow::bail!("Data needs to be an ArrayBuffer");
+                }
+                let data = data.as_bytes_mut()?;
+                let data = &mut data[offset..(offset + length)];
+                let n = fd.read(data)?; */
+                let n = "Hello From Rust!!";
+                Ok(n.into())
+                //Ok(n.into())
+            })?,
         )?;
+
+        context.eval_global("ubiq_fn.js", include_str!("ubiq_fn.js"))?;
         Ok(())
     }
 }
-
-/*
-#[cfg(test)]
-mod tests {
-    use crate::{random::Random, APIConfig, JSApiSet};
-    use anyhow::Result;
-    use javy::Runtime;
-
-    #[test]
-    fn test_random() -> Result<()> {
-        let runtime = Runtime::default();
-        Random.register(&runtime, &APIConfig::default())?;
-        let ctx = runtime.context();
-        ctx.eval_global("test.js", "result = Math.random()")?;
-        let result = ctx.global_object()?.get_property("result")?.as_f64()?;
-        assert!(result >= 0.0);
-        assert!(result < 1.0);
-        Ok(())
-    }
-}
-*/

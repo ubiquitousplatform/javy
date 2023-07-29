@@ -61,6 +61,9 @@ mod stream_io;
 #[cfg(feature = "text_encoding")]
 mod text_encoding;
 
+#[cfg(feature = "ubiq_fn")]
+mod ubiq_fn;
+
 pub(crate) trait JSApiSet {
     fn register(&self, runtime: &Runtime, config: &APIConfig) -> Result<()>;
 }
@@ -85,7 +88,7 @@ pub fn add_to_runtime(runtime: &Runtime, config: APIConfig) -> Result<()> {
     stream_io::StreamIO.register(runtime, &config)?;
     #[cfg(feature = "text_encoding")]
     text_encoding::TextEncoding.register(runtime, &config)?;
-    Ok(())
     #[cfg(feature = "ubiq_fn")]
-    
+    ubiq_fn::UbiqFn.register(runtime, &config)?;
+    Ok(())
 }
