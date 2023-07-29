@@ -7,6 +7,14 @@ writeOutput(result);
 
 // The main function.
 function foo(input) {
+  var enc = new TextEncoder();
+  var data = enc.encode(
+    JSON.stringify({
+      action: "log",
+      payload: { message: "This is the input string from the client JS!" },
+    })
+  );
+  Ubiquitous.Functions.invoke("", data);
   return { foo: input.n + 1, newBar: input.bar + "!" };
 }
 

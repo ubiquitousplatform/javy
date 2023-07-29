@@ -1,0 +1,1 @@
+echo '{ "n": 2, "bar": "baz" }' | wasmtime javy-example.wasm
