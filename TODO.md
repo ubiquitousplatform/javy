@@ -4,10 +4,10 @@
 
 1. get ubiq_fn rust function compiling
 1. get a regular js app to call Ubiquitous.Functions.Invoke and see the js and rust output
+1. run this javy module from .NET WASMTIME
 
 ## Doing
 
-1. run this javy module from .NET WASMTIME
 
 ## TODO
 
@@ -25,3 +25,8 @@
 
 1. add support for messagepack and json
 2. Post to Javy about whether we can serialize JS or messagepack within Rust in Javy instead of on the JS side
+
+
+Notes:
+
+quickjs-wasm-rs supports serde of Value types.  you can get values in and out of both JSON and MessagePack
