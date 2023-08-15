@@ -1,19 +1,40 @@
+use std::slice;
+
 use anyhow::{anyhow, Result};
 // use std::io::{Read, Write};
+use std::ffi::CStr;
 
-use javy::Runtime;
+use javy::{Runtime, quickjs::JSValue};
 
 use crate::{APIConfig, JSApiSet};
 
 pub(super) struct UbiqFn;
 
+// This block references imported modules from the host environment
 #[link(wasm_import_module = "ubiquitous_functions")]
 extern "C" {
     fn get_response_size() -> i32; // fn get_input_size() -> i32;
     fn get_response(ptr: i32); // fn get_input(ptr: i32);
-    fn invoke_json(ptr: i32, size: i32); // fn set_output(ptr: i32, size: i32);
-    fn invoke_msgpack(ptr: i32, size: i32); // fn set_output(ptr: i32, size: i32);
+    fn invoke_json(ptr: i32, size: i32) -> i32; // fn set_output(ptr: i32, size: i32);
+    fn invoke_msgpack(ptr: i32, size: i32) -> i32; // fn set_output(ptr: i32, size: i32);
 }
+
+// This is an exported rust function that the host environment can call directly
+#[no_mangle]
+pub extern "C" fn ubiquitous_functions_guest_malloc(requested_size: i32) -> i32 {
+    // Print the requested size
+    println!("malloc called with size {}", requested_size);
+    // Allocate a buffer of the requested size and then forget it so that it doesn't get cleaned up and then return the pointer.
+    let buf = vec![0u8; requested_size as usize];
+    let ptr = buf.as_ptr();
+    // TODO: does this leak memory? maybe we should store the buffer in a global variable and then free it when the response is received?
+    // leak the buffer so that it doesn't get cleaned up
+    //Box::leak(buf);
+
+    std::mem::forget(buf);
+    ptr as i32
+}
+
 
 impl JSApiSet for UbiqFn {
     fn register(&self, runtime: &Runtime, _config: &APIConfig) -> Result<()> {
@@ -90,10 +111,43 @@ impl JSApiSet for UbiqFn {
 
                 println!("calling invoke_json...");
                 unsafe {
-                    invoke_json(ptr as i32, size);
-                }
+                    let resp_ptr = invoke_json(ptr as i32, size);
+                println!("invoke_json returned value of {:?}", resp_ptr);
 
-                println!("invoke_json called! calling get_response_size...");
+                // retrieve an i32 value from 4 sequential bytes in memory and store in variable
+                let response_size = *(resp_ptr as *const i32);
+                println!("response_size = {:?}", response_size);
+                
+                // store a utf8 string from memory in a variable at location resp + 4
+                
+                // Assume that `ptr` is a pointer to the memory location containing the string
+                // and `len` is the length of the string
+                let slice = unsafe { slice::from_raw_parts((resp_ptr + 4) as *const u8, response_size as usize) };
+                let raw_json_string = match std::str::from_utf8(slice) {
+                    Ok(s) => s.to_owned(),
+                    Err(e) => return Err(e.into()),
+                };
+                println!("raw_json_string = {:?}", raw_json_string);
+
+
+                // Possible optimizations: skip from_utf8 validation
+                // use C String? (this require iterating)
+
+                //let response_buffer =  CStr::from_ptr(resp + 4);
+
+                
+                //let response_buffer =  CStr::from_ptr(resp);
+                
+                let response_buffer = "";
+                
+                println!(
+                    "response_buffer as a string = {:?}",
+                    response_buffer
+                );
+
+                Ok(response_buffer.into())
+            }
+                /*println!("invoke_json called! calling get_response_size...");
 
                 let mem_size = unsafe { get_response_size() };
 
@@ -112,7 +166,7 @@ impl JSApiSet for UbiqFn {
                 println!(
                     "get_response completed! response_buffer = {:?}",
                     response_buffer
-                );
+                );*/
 
                 /*let response: OkResponse =
                     serde_json::from_slice(&response_buffer).map_err(|e| {
@@ -122,8 +176,11 @@ impl JSApiSet for UbiqFn {
 
                 println!("response = {:?}", response);*/
                 // Probably want to convert it back into a string before returning it?
-                Ok(response_buffer.into())
+
+                //Ok(response_buffer.into())
+
                 //Ok(n.into())
+
             })?,
         )?;
 

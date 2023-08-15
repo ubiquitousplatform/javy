@@ -15,7 +15,7 @@ function foo(input) {
       payload: { message: "This is the input string from the client JS!" },
     })
   );
-  Ubiquitous.Functions.invoke("", data);
+  Ubiquitous.Functions.invoke_json("", data);
   // return { foo: input.n + 1, newBar: input.bar + "!" };
 }
 
