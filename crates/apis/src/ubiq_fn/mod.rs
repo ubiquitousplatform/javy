@@ -23,7 +23,7 @@ extern "C" {
 #[no_mangle]
 pub extern "C" fn ubiquitous_functions_guest_malloc(requested_size: i32) -> i32 {
     // Print the requested size
-    println!("malloc called with size {}", requested_size);
+    //println!("malloc called with size {}", requested_size);
     // Allocate a buffer of the requested size and then forget it so that it doesn't get cleaned up and then return the pointer.
     let buf = vec![0u8; requested_size as usize];
     let ptr = buf.as_ptr();
@@ -51,17 +51,17 @@ impl JSApiSet for UbiqFn {
         global.set_property(
             "__ubiquitous_functions_invoke_json",
             context.wrap_callback(|_, _this_arg, args| {
-                //println!("Name: {}", name);
-                //println!("Args: {:?}", args);
-                //println!("This: {:?}", this_arg);
-                println!("Made it across to rust!");
+                ////println!("Name: {}", name);
+                ////println!("Args: {:?}", args);
+                ////println!("This: {:?}", this_arg);
+                //println!("Made it across to rust!");
 
                 if args.len() != 1 {
                     return Err(anyhow!("Expecting 1 argument, got {}", args.len()));
                 }
 
                 let json_string: String = args[0].try_into()?; // receive the string from JS already converted from js object to JSON string
-                println!("json_string = {:?}", json_string);
+                //println!("json_string = {:?}", json_string);
 
                 /*
                 let [fd, data, offset, length, ..] = args else {
@@ -81,8 +81,8 @@ impl JSApiSet for UbiqFn {
                 let n = fd.read(data)?; */
                 // let n = "Hello From Rust!!";
 
-                // println!("Calling log function with JSON...");
-                // println!("Calling log function with JSON...");
+                // //println!("Calling log function with JSON...");
+                // //println!("Calling log function with JSON...");
 
                 // TODO: pass version of API expected?
                 // let log = Log {
@@ -109,14 +109,14 @@ impl JSApiSet for UbiqFn {
                 let ptr = json_string.as_ptr();
                 std::mem::forget(ptr);
 
-                println!("calling invoke_json...");
+                //println!("calling invoke_json...");
                 unsafe {
                     let resp_ptr = invoke_json(ptr as i32, size);
-                println!("invoke_json returned value of {:?}", resp_ptr);
+                //println!("invoke_json returned value of {:?}", resp_ptr);
 
                 // retrieve an i32 value from 4 sequential bytes in memory and store in variable
                 let response_size = *(resp_ptr as *const i32);
-                println!("response_size = {:?}", response_size);
+                //println!("response_size = {:?}", response_size);
                 
                 // store a utf8 string from memory in a variable at location resp + 4
                 
@@ -127,7 +127,7 @@ impl JSApiSet for UbiqFn {
                     Ok(s) => s.to_owned(),
                     Err(e) => return Err(e.into()),
                 };
-                println!("raw_json_string = {:?}", raw_json_string);
+                //println!("raw_json_string = {:?}", raw_json_string);
 
 
                 // Possible optimizations: skip from_utf8 validation
@@ -140,41 +140,41 @@ impl JSApiSet for UbiqFn {
                 
                 let response_buffer = "";
                 
-                println!(
-                    "response_buffer as a string = {:?}",
-                    response_buffer
-                );
+                //println!(
+                //     "response_buffer as a string = {:?}",
+                //     response_buffer
+                // );
 
                 Ok(response_buffer.into())
             }
-                /*println!("invoke_json called! calling get_response_size...");
+                /*//println!("invoke_json called! calling get_response_size...");
 
                 let mem_size = unsafe { get_response_size() };
 
-                println!("get_response_size called! mem_size = {:?}", mem_size);
+                //println!("get_response_size called! mem_size = {:?}", mem_size);
 
                 let mut buf: Vec<u8> = Vec::with_capacity(mem_size as usize);
                 let ptr = buf.as_mut_ptr();
                 std::mem::forget(ptr);
 
-                println!("calling get_response...");
+                //println!("calling get_response...");
                 let response_buffer = unsafe {
                     get_response(ptr as i32);
                     Vec::from_raw_parts(ptr, mem_size as usize, mem_size as usize)
                 };
 
-                println!(
+                //println!(
                     "get_response completed! response_buffer = {:?}",
                     response_buffer
                 );*/
 
                 /*let response: OkResponse =
                     serde_json::from_slice(&response_buffer).map_err(|e| {
-                        eprintln!("ser: {e}");
+                        e//println!("ser: {e}");
                         e
                     })?;
 
-                println!("response = {:?}", response);*/
+                //println!("response = {:?}", response);*/
                 // Probably want to convert it back into a string before returning it?
 
                 //Ok(response_buffer.into())
