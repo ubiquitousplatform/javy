@@ -21,6 +21,7 @@ fn create_wasm_env() -> Result<(Store<WasiCtx>, Instance, Memory)> {
     wasmtime_wasi::snapshots::preview_1::add_wasi_snapshot_preview1_to_linker(&mut linker, |s| s)?;
     let wasi = WasiCtxBuilder::new().inherit_stderr().build();
     let mut store = Store::new(&engine, wasi);
+    linker.define_unknown_imports_as_default_values(&module);
     let instance = linker.instantiate(&mut store, &module)?;
     let memory = instance.get_memory(&mut store, "memory").unwrap();
     Ok((store, instance, memory))
