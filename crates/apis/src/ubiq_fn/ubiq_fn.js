@@ -9,11 +9,11 @@
   // This is essentially how we adapt the JS and provide JS-side processing and error handling before invoking the rust code.
   globalThis.Ubiquitous.Functions = {
     invoke_json(input = "") {
-      input = input.toString(); // non-string inputs are converted to strings
-      console.log("Made it to the JS wrapper!")
-      // if (!(data instanceof Uint8Array)) {
-      //   throw TypeError("Data needs to be a Uint8Array");
-      // }
+      //input = input.toString(); // non-string inputs are converted to strings
+      console.log("JS WRAPPER: Made it to the JS wrapper!")
+      /*if (!(input instanceof Uint8Array)) {
+         throw TypeError("Data needs to be a Uint8Array");
+      }*/
       return __ubiquitous_functions_invoke_json(
         input
       );

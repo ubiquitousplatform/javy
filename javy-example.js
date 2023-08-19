@@ -1,3 +1,6 @@
+// TODO: we need to force-wrap an Init() method on the JS to control the Ubiquitous setup so that can be shifted out of the compiler into the lib,
+//  and also need to capture any JS exceptions and call invoke_json(action:"js_exception")
+
 // Read input from stdin
 // const input = readInput();
 // Call the function with the input
@@ -8,14 +11,17 @@ foo();
 
 // The main function.
 function foo(input) {
-  var enc = new TextEncoder();
-  var data = enc.encode(
+  var data = 
     JSON.stringify({
       action: "log",
-      payload: { message: "This is the input string from the client JS!" },
-    })
+      payload: { message: "This is the input string from the client JS!", timestamp: new Date() },
+    }
   );
-  Ubiquitous.Functions.invoke_json("", data);
+  // console.log("About to call invoke_json!");
+  // console.log(Ubiquitous);
+  // console.log(Ubiquitous.Functions);
+  // console.log(Ubiquitous.Functions.invoke_json);
+  Ubiquitous.Functions.invoke_json(data);
   // return { foo: input.n + 1, newBar: input.bar + "!" };
 }
 
