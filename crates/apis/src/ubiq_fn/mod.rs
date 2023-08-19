@@ -13,8 +13,6 @@ pub(super) struct UbiqFn;
 // This block references imported modules from the host environment
 #[link(wasm_import_module = "ubiquitous_functions")]
 extern "C" {
-    fn get_response_size() -> i32; // fn get_input_size() -> i32;
-    fn get_response(ptr: i32); // fn get_input(ptr: i32);
     fn invoke_json(ptr: i32, size: i32) -> i32; // fn set_output(ptr: i32, size: i32);
     fn invoke_msgpack(ptr: i32, size: i32) -> i32; // fn set_output(ptr: i32, size: i32);
 }
