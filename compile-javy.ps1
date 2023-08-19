@@ -7,6 +7,6 @@ $env:QUICKJS_WASM_SYS_WASI_SDK_MINOR_VERSION = "0.m"
 cargo build -p javy-core --target=wasm32-wasi -r
 # Disable link-time optimization when developing for faster compiles
 $env:CARGO_PROFILE_RELEASE_LTO = "off"
-cargo build  -p javy-cli -r
+cargo build -p javy-cli -r
 
 echo "Compiling javy done."
