@@ -67,7 +67,7 @@ use walrus::{DataKind, FunctionBuilder, Module, ValType};
 pub fn generate(js: &JS, exported_functions: Vec<Export>) -> Result<Vec<u8>> {
     let mut module = Module::with_config(transform::module_config());
 
-    const IMPORT_NAMESPACE: &str = "javy_quickjs_provider_v1";
+    const IMPORT_NAMESPACE: &str = "ubiquitous_quickjs_v1";
 
     let canonical_abi_realloc_type = module.types.add(
         &[ValType::I32, ValType::I32, ValType::I32, ValType::I32],
