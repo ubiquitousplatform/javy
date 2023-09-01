@@ -11,18 +11,20 @@ foo();
 
 // The main function.
 function foo(input) {
-  var data = 
-    JSON.stringify({
-      action: "log",
-      payload: { message: "This is the input string from the client JS!", timestamp: new Date() },
-    }
-  );
+  var data = JSON.stringify({
+    action: "log",
+    payload: {
+      message: "This is the input string from the client JS!",
+      timestamp: new Date(),
+    },
+  });
   // console.log("About to call invoke_json!");
   // console.log(Ubiquitous);
   // console.log(Ubiquitous.Functions);
   // console.log(Ubiquitous.Functions.invoke_json);
   Ubiquitous.Functions.invoke_json(data);
   // return { foo: input.n + 1, newBar: input.bar + "!" };
+  return { foo: 1, newBar: "!" };
 }
 
 // Read input from stdin
